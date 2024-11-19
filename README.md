@@ -43,3 +43,48 @@
 - **エラーログ**: システムエラーや不正なAPIアクセスの記録。
 
 ---
+
+## セットアップ
+### **1. プロジェクトをクローンする**
+```bash
+# https
+git clone https://github.com/ryudedev/AuthTrack.git
+# ssh
+git clone git@github.com:ryudedev/AuthTrack.git
+```
+
+## **2. .envを作成**
+- .envファイルの記述内容を変更する前に
+  ```bash
+  # ルートディレクトリに移動する
+  cd AuthTrack
+
+  # リネームする
+  rm api/.env.sample api/.env
+  rm web/.env.sample web/.env
+  ```
+- 内容を変更する
+
+  ```bash
+  # api/.env
+  POSTGRES_HOST={任意のホスト名}
+  POSTGRES_USER={任意のユーザ名}
+  POSTGRES_PASSWORD={任意のパスワード}
+  POSTGRES_DB={任意のdb名}
+  POSTGRES_DB={任意のPORT番号}
+  DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public
+  ```
+
+## **3. buildする**
+- まず以下のコマンドで重複するコンテナーがないか確認
+  ```bash
+  # 同名コンテナーが存在するか検索する
+  docker ps -a | grep -e db -e api -e web
+  ```
+  **※重複するコンテナーがあれば、コンテナーを停止させるかコンテナー名を変更する。**
+
+- その後、以下のコマンドを実行
+  ```bash
+  # buildする
+  docker compose up -d --build
+  ```
