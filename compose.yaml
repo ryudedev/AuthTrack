@@ -1,0 +1,37 @@
+services:
+  web:
+    build:
+      context: ./web
+      dockerfile: ../dockerfile/Dockerfile.web
+    ports:
+      - 3000:3000
+    volumes:
+      - ./web:/app
+    env_file:
+      - ./web/.env
+    depends_on:
+      - api
+  api:
+    build:
+      context: ./api
+      dockerfile: ../dockerfile/Dockerfile.api
+    ports:
+      - 3001:3000
+      - 5555:5555
+    volumes:
+      - ./api:/app
+    depends_on:
+      - db
+    env_file:
+      - ./api/.env
+  db:
+    image: postgres:latest
+    ports:
+      - 5432:5432
+    env_file:
+      - ./api/.env
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+volumes:
+  db-data:

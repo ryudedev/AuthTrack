@@ -1,0 +1,23 @@
+# 依存関係のインストール
+FROM node:22.11.0 as deps
+WORKDIR /app
+COPY package.json pnpm-lock.yaml ./
+RUN npm install -g pnpm && pnpm install --frozen-lockfile
+
+# ビルド
+FROM node:22.11.0 as builder
+WORKDIR /app
+COPY package.json pnpm-lock.yaml ./
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+RUN npm install -g pnpm && pnpm build && pnpm prune --prod
+
+# 本番用イメージ
+FROM node:22.11.0 as runner
+WORKDIR /app
+COPY package.json pnpm-lock.yaml ./
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/node_modules ./node_modules
+RUN npm install -g pnpm && pnpm prune --prod
+EXPOSE 3000
+CMD ["pnpm", "dev"]
